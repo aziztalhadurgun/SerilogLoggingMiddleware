@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+   <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>LogStreamMiddleware</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>AzizTalha</Authors>
+    <Description>This middleware logs HTTP requests and responses and sends logs to Seq using Serilog.</Description>
+    <PackageTags>Serilog, Seq, Middleware, Logging</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
