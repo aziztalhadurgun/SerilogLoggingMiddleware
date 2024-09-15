@@ -4,23 +4,16 @@ using Serilog;
 
 namespace SerilogLoggingMiddleware;
 
-public class RequestResponseLoggingMiddleware
+public class RequestResponseLoggingMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public RequestResponseLoggingMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke(HttpContext context)
     {
-        // Gelen HTTP isteği bilgilerini logla
         Log.Information("Request {Method} {Path}", context.Request.Method, context.Request.Path);
 
-        await _next(context); // Bir sonraki middleware'e geç
+        await _next(context);
 
-        // Yanıt bilgilerini logla
         Log.Information("Response {StatusCode}", context.Response.StatusCode);
     }
 }

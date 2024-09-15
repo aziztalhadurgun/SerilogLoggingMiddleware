@@ -13,6 +13,7 @@
     <Authors>AzizTalha</Authors>
     <Description>This middleware logs HTTP requests and responses and sends logs to Seq using Serilog.</Description>
     <PackageTags>Serilog, Seq, Middleware, Logging</PackageTags>
+    <RepositoryUrl>https://github.com/aziztalhadurgun/SerilogLoggingMiddleware</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
