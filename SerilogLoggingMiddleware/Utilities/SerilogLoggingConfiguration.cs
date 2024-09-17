@@ -1,6 +1,6 @@
 using Serilog;
 
-namespace SerilogLoggingMiddleware;
+namespace SerilogLoggingMiddleware.Utilities;
 
 public static class SerilogLoggingConfiguration
 {
@@ -8,8 +8,8 @@ public static class SerilogLoggingConfiguration
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.Console()  // Logları konsola yazdır
-            .WriteTo.Seq(seqUrl)  // Logları Seq'e gönder
+            .WriteTo.Console()
+            .WriteTo.Seq(seqUrl)
             .CreateLogger();
     }
 }
