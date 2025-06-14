@@ -1,15 +1,17 @@
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace SerilogLoggingMiddleware.Utilities;
 
 public static class SerilogLoggingConfiguration
 {
-    public static void ConfigureSerilog(string seqUrl)
+    public static void ConfigureSerilog(IConfiguration configuration)
     {
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .WriteTo.Console()
-            .WriteTo.Seq(seqUrl)
+            .ReadFrom.Configuration(configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithThreadId()
             .CreateLogger();
     }
 }
