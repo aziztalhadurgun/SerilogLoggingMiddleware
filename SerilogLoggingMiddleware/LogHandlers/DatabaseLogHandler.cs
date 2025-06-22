@@ -1,40 +1,116 @@
+using System.Data;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using SerilogLoggingMiddleware.Models;
 
 namespace SerilogLoggingMiddleware.LogHandlers;
 
-public class DatabaseLogHandler : ILogHandler
+public abstract class DatabaseLogHandler : ILogHandler, IDisposable
 {
-    public LoggerConfiguration Handle(LoggerConfiguration loggerConfig, Dictionary<string, string> args)
+
+    protected readonly string _connectionString;
+    protected readonly string _tableName;
+    private bool _disposed = false;
+    private bool _tableCreated = false;
+
+    protected DatabaseLogHandler(string connectionString, string tableName = "Logs")
     {
-        if (!args.TryGetValue("databaseType", out var databaseType) ||
-            !args.TryGetValue("connectionString", out var connectionString))
-        {
-            throw new ArgumentException("DatabaseType and ConnectionString must be provided for database logging.");
-        }
+        _connectionString = connectionString;
+        _tableName = tableName;
+    }
 
-        var tableName = args.ContainsKey("tableName") ? args["tableName"] : "Logs";
+    public abstract void Configure(LoggerConfiguration loggerConfiguration);
+    public abstract Task HandleLogAsync(LogMessage message);
+    protected abstract Task CreateTableIfNotExistsAsync();
 
-        switch (databaseType.ToUpper())
+    protected abstract string GetInsertSql();
+
+    protected abstract void AddParameters(IDbCommand command, LogMessage message);
+
+    protected virtual void AddParameter(IDbCommand command, string name, object value, DbType dbType)
+    {
+        var parameter = command.CreateParameter();
+        parameter.ParameterName = name;
+        parameter.Value = value ?? DBNull.Value;
+        parameter.DbType = dbType;
+        command.Parameters.Add(parameter);
+    }
+
+    public async Task EnsureTableCreatedAsync()
+    {
+        if (!_tableCreated)
         {
-            case "MSSQL":
-                return loggerConfig.WriteTo.MSSqlServer(
-                    connectionString: connectionString,
-                    sinkOptions: new MSSqlServerSinkOptions { TableName = tableName });
-            case "POSTGRESQL":
-                return loggerConfig.WriteTo.PostgreSQL(
-                    connectionString: connectionString,
-                    tableName: tableName);
-            case "MYSQL":
-                return loggerConfig.WriteTo.MySQL(
-                    connectionString: connectionString,
-                    tableName: tableName);
-            case "MONGODB":
-                return loggerConfig.WriteTo.MongoDB(
-                    databaseUrl: connectionString,
-                    collectionName: tableName);
-            default:
-                throw new NotSupportedException($"Database type '{databaseType}' is not supported.");
+            await CreateTableIfNotExistsAsync();
+            _tableCreated = true;
         }
     }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+            }
+            _disposed = true;
+        }
+    }
+
+    ~DatabaseLogHandler()
+    {
+        Dispose(false);
+    }
+
+    // private readonly string _connectionString;
+    // private readonly string _databaseType;
+    // private readonly string _tableName;
+
+    // public DatabaseLogHandler(string connectionString, string databaseType, string tableName = "Logs")
+    // {
+    //     _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    //     _databaseType = databaseType?.ToUpper() ?? throw new ArgumentNullException(nameof(databaseType));
+    //     _tableName = tableName;
+    // }
+
+    // public void Configure(LoggerConfiguration loggerConfiguration)
+    // {
+    //     switch (_databaseType)
+    //     {
+    //         case "MSSQL":
+    //             loggerConfiguration.WriteTo.MSSqlServer(
+    //                 connectionString: _connectionString,
+    //                 sinkOptions: new MSSqlServerSinkOptions { TableName = _tableName });
+    //             break;
+    //         case "POSTGRESQL":
+    //             loggerConfiguration.WriteTo.PostgreSQL(
+    //                 connectionString: _connectionString,
+    //                 tableName: _tableName);
+    //             break;
+    //         case "MYSQL":
+    //             loggerConfiguration.WriteTo.MySQL(
+    //                 connectionString: _connectionString,
+    //                 tableName: _tableName);
+    //             break;
+    //         case "MONGODB":
+    //             loggerConfiguration.WriteTo.MongoDB(
+    //                 databaseUrl: _connectionString,
+    //                 collectionName: _tableName);
+    //             break;
+    //         default:
+    //             throw new NotSupportedException($"Database type '{_databaseType}' is not supported.");
+    //     }
+    // }
+
+    // public Task HandleLogAsync(LogMessage message)
+    // {
+    //     // Database logging is handled by Serilog's sinks, so we don't need to implement this
+    //     return Task.CompletedTask;
+    // }
 }

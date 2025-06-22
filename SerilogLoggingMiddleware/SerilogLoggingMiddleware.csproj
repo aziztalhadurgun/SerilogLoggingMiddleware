@@ -9,7 +9,7 @@
    <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>LogStreamMiddleware</PackageId>
-    <Version>2.1.1</Version>
+    <Version>3.0.2</Version>
     <Authors>AzizTalha</Authors>
     <Description>This middleware logs HTTP requests and responses and sends logs to Seq using Serilog.</Description>
     <PackageTags>Serilog, Seq, Middleware, Logging</PackageTags>
@@ -18,13 +18,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.MongoDB" Version="5.4.1" />
-    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="7.0.0" />
+    <PackageReference Include="Serilog.Sinks.MongoDB" Version="7.0.0" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="8.2.0" />
     <PackageReference Include="Serilog.Sinks.MySQL" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.3.0" />
-    <PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

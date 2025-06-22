@@ -1,15 +1,37 @@
 using Serilog;
+using SerilogLoggingMiddleware.Models;
 
 namespace SerilogLoggingMiddleware.LogHandlers;
 
 public class FileLogHandler : ILogHandler
 {
-    public LoggerConfiguration Handle(LoggerConfiguration loggerConfig, Dictionary<string, string> args)
+    private readonly string _filePath;
+
+    public FileLogHandler(string filePath)
     {
-        if (args.TryGetValue("path", out var path))
+        _filePath = filePath;
+        CreateDirectoryIfNotExists();
+    }
+
+    public void Configure(LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration.WriteTo.File(_filePath,
+            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level:u3}] {Message} [TraceId: {TraceId}] [CorrelationId: {CorrelationId}] [RequestPath: {RequestPath}] [HttpMethod: {HttpMethod}] [StatusCode: {StatusCode}] [ElapsedMs: {ElapsedMilliseconds}]{NewLine}{Exception}");
+    }
+
+    private void CreateDirectoryIfNotExists()
+    {
+        var directory = Path.GetDirectoryName(_filePath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
         {
-            return loggerConfig.WriteTo.File(path);
+            Directory.CreateDirectory(directory);
         }
-        throw new ArgumentException("File path must be provided for File logging.");
+    }
+
+    public async Task HandleLogAsync(LogMessage message)
+    {
+        var logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{message.Level}] {message.Message}{Environment.NewLine}";
+        
+        await File.AppendAllTextAsync(_filePath, logEntry);
     }
 }

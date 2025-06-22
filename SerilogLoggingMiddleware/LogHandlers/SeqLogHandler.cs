@@ -1,15 +1,54 @@
 using Serilog;
+using Serilog.Core;
+using SerilogLoggingMiddleware.Models;
 
 namespace SerilogLoggingMiddleware.LogHandlers;
 
 public class SeqLogHandler : ILogHandler
 {
-    public LoggerConfiguration Handle(LoggerConfiguration loggerConfig, Dictionary<string, string> args)
+    private readonly Logger _logger;
+    private readonly string _seqServerUrl;
+    private readonly string _apiKey;
+
+    public SeqLogHandler(string seqServerUrl, string apiKey)
     {
-        if (args.TryGetValue("serverUrl", out var serverUrl))
+        _seqServerUrl = seqServerUrl;
+        _apiKey = apiKey;
+    }
+
+
+    public void Configure(LoggerConfiguration loggerConfiguration)
+    {
+        loggerConfiguration.WriteTo.Seq(_seqServerUrl, apiKey: _apiKey);
+    }
+
+    public async Task HandleLogAsync(LogMessage message)
+    {
+        await Task.Run(() =>
         {
-            return loggerConfig.WriteTo.Seq(serverUrl);
-        }
-        throw new ArgumentException("Seq server URL must be provided.");
+            switch (message.Level.ToUpper())
+            {
+                case "ERROR":
+                    _logger.Error(message.Message);
+                    break;
+                case "WARNING":
+                    _logger.Warning(message.Message);
+                    break;
+                case "INFO":
+                    _logger.Information(message.Message);
+                    break;
+                case "DEBUG":
+                    _logger.Debug(message.Message);
+                    break;
+                default:
+                    _logger.Information(message.Message);
+                    break;
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        _logger?.Dispose();
     }
 }
