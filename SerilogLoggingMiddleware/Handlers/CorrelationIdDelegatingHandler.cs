@@ -15,9 +15,9 @@ public class CorrelationIdDelegatingHandler : DelegatingHandler
     {
         var correlationId = _httpContextAccessor.HttpContext?.Items["CorrelationId"]?.ToString();
 
-        if (!string.IsNullOrEmpty(correlationId) && !request.Headers.Contains("X-Correlation-ID"))
+        if (!string.IsNullOrEmpty(correlationId) && !request.Headers.Contains("X-Correlation-Id"))
         {
-            request.Headers.Add("X-Correlation-ID", correlationId);
+            request.Headers.Add("X-Correlation-Id", correlationId);
         }
 
         return await base.SendAsync(request, cancellationToken);

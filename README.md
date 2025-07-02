@@ -16,19 +16,41 @@ Bu middleware, entegrasyonu kolay ve güçlü loglama yetenekleri sunar.
 NuGet paketi olarak kurmak için aşağıdaki komutu kullanabilirsiniz:
 
 ```bash
-dotnet add package LogStreamMiddleware --version 1.1.0
+dotnet add package LogStreamMiddleware --version 5.0.0
 ```
 
 ## Kullanımı
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSerilogLogging(builder.Configuration);
+
 var app = builder.Build();
 
-// Middleware'i Seq URL ile kullanın
-app.UseRequestLogging("http://localhost:5341");
+app.UseCorrelationId();
+app.UseRequestResponseLogging();
 
 app.MapGet("/", () => "Merhaba Dünya!");
 
 app.Run();
+```
+
+## Yapılandırma
+
+`appsettings.json` dosyanıza aşağıdaki gibi bir yapı ekleyebilirsiniz:
+
+```json
+"Logging": {
+  "Handlers": {
+    "Console": { "Enabled": true },
+    "File": { "Enabled": true, "Path": "logs/app.log" },
+    "Seq": { "Enabled": true, "ServerUrl": "http://localhost:5341", "ApiKey": "" },
+    "Database": {
+      "Enabled": false,
+      "Type": "MSSQL",
+      "ConnectionString": "",
+      "TableName": "Logs"
+    }
+  }
+}
 ```

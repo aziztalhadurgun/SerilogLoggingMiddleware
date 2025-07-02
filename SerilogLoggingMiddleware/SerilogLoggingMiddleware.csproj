@@ -9,7 +9,7 @@
    <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <PackageId>LogStreamMiddleware</PackageId>
-    <Version>3.0.2</Version>
+    <Version>5.0.0</Version>
     <Authors>AzizTalha</Authors>
     <Description>This middleware logs HTTP requests and responses and sends logs to Seq using Serilog.</Description>
     <PackageTags>Serilog, Seq, Middleware, Logging</PackageTags>

@@ -50,7 +50,6 @@ public class MongoDbDatabaseHandler : DatabaseLogHandler
         }
         catch (Exception ex)
         {
-            // Log the error but don't throw to prevent application crashes
             Console.WriteLine($"Error writing to MongoDB: {ex.Message}");
         }
     }

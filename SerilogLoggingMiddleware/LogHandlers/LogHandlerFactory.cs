@@ -65,7 +65,7 @@ public class LogHandlerFactory
         if (dbSection.GetValue<bool>("Enabled"))
         {
             var connectionString = dbSection["ConnectionString"];
-            var databaseType = dbSection["DatabaseType"];
+            var databaseType = dbSection["Type"];
             var tableName = dbSection["TableName"] ?? "Logs";
 
             if (string.IsNullOrEmpty(connectionString))

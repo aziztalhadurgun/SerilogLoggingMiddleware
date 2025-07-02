@@ -1,6 +1,5 @@
 using System.Data;
 using Serilog;
-using Serilog.Sinks.MSSqlServer;
 using SerilogLoggingMiddleware.Models;
 
 namespace SerilogLoggingMiddleware.LogHandlers;
@@ -67,50 +66,4 @@ public abstract class DatabaseLogHandler : ILogHandler, IDisposable
     {
         Dispose(false);
     }
-
-    // private readonly string _connectionString;
-    // private readonly string _databaseType;
-    // private readonly string _tableName;
-
-    // public DatabaseLogHandler(string connectionString, string databaseType, string tableName = "Logs")
-    // {
-    //     _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
-    //     _databaseType = databaseType?.ToUpper() ?? throw new ArgumentNullException(nameof(databaseType));
-    //     _tableName = tableName;
-    // }
-
-    // public void Configure(LoggerConfiguration loggerConfiguration)
-    // {
-    //     switch (_databaseType)
-    //     {
-    //         case "MSSQL":
-    //             loggerConfiguration.WriteTo.MSSqlServer(
-    //                 connectionString: _connectionString,
-    //                 sinkOptions: new MSSqlServerSinkOptions { TableName = _tableName });
-    //             break;
-    //         case "POSTGRESQL":
-    //             loggerConfiguration.WriteTo.PostgreSQL(
-    //                 connectionString: _connectionString,
-    //                 tableName: _tableName);
-    //             break;
-    //         case "MYSQL":
-    //             loggerConfiguration.WriteTo.MySQL(
-    //                 connectionString: _connectionString,
-    //                 tableName: _tableName);
-    //             break;
-    //         case "MONGODB":
-    //             loggerConfiguration.WriteTo.MongoDB(
-    //                 databaseUrl: _connectionString,
-    //                 collectionName: _tableName);
-    //             break;
-    //         default:
-    //             throw new NotSupportedException($"Database type '{_databaseType}' is not supported.");
-    //     }
-    // }
-
-    // public Task HandleLogAsync(LogMessage message)
-    // {
-    //     // Database logging is handled by Serilog's sinks, so we don't need to implement this
-    //     return Task.CompletedTask;
-    // }
 }

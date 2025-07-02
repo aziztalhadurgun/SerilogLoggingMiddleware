@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using SerilogLoggingMiddleware.Utilities;
 
 namespace SerilogLoggingMiddleware.Middlewares;
@@ -19,29 +18,35 @@ public class RequestResponseLoggingMiddleware
 
     public async Task Invoke(HttpContext context)
     {
+        var originalBodyStream = context.Response.Body;
+
+        using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
         try
         {
-            var request = await RequestResponseFormatter.FormatRequest(context.Request);
-            request = SensitiveDataMasker.MaskSensitiveData(request);
-            _logger.LogInformation("Incoming Request: {Request}", request);
+            await _next(context); // pipeline devam etsin
 
-            var originalBodyStream = context.Response.Body;
-            using var responseBody = new MemoryStream();
-            context.Response.Body = responseBody;
+            // Request ve Response logla
+            var requestText = await RequestResponseFormatter.FormatRequest(context.Request);
+            requestText = SensitiveDataMasker.MaskSensitiveData(requestText);
+            _logger.LogInformation("Request: {Request}", requestText);
 
-            await _next(context);
+            var responseText = await RequestResponseFormatter.FormatResponse(context.Response);
+            responseText = SensitiveDataMasker.MaskSensitiveData(responseText);
+            _logger.LogInformation("Response: {Response}", responseText);
 
-            var response = await RequestResponseFormatter.FormatResponse(context.Response);
-            response = SensitiveDataMasker.MaskSensitiveData(response);
-            _logger.LogInformation("Outgoing Response: {Response}", response);
-
+            responseBody.Seek(0, SeekOrigin.Begin);
             await responseBody.CopyToAsync(originalBodyStream);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unhandled exception has occurred while executing the request");
+            _logger.LogError(ex, "Middleware Exception");
             throw;
         }
-
+        finally
+        {
+            context.Response.Body = originalBodyStream; // her hâlükârda orijinale dön
+        }
     }
 }
