@@ -1,6 +1,6 @@
-# LogStreamMiddleware
+# ADWorks.Logging
 
-`LogStreamMiddleware`, ASP.NET Core uygulamalarınızda HTTP isteklerini ve yanıtlarını Serilog ve Seq kullanarak loglamanızı sağlayan bir middleware'dir. Ayrıca hassas verileri (TC kimlik numarası, telefon numarası, kredi kartı numarası, parola) maskeler.
+`ADWorks.Logging`, ASP.NET Core uygulamalarınızda HTTP isteklerini ve yanıtlarını Serilog ve Seq kullanarak loglamanızı sağlayan bir middleware'dir. Ayrıca hassas verileri (TC kimlik numarası, telefon numarası, kredi kartı numarası, parola) maskeler.
 Bu middleware, entegrasyonu kolay ve güçlü loglama yetenekleri sunar.
 
 ## Özellikler
@@ -16,7 +16,7 @@ Bu middleware, entegrasyonu kolay ve güçlü loglama yetenekleri sunar.
 NuGet paketi olarak kurmak için aşağıdaki komutu kullanabilirsiniz:
 
 ```bash
-dotnet add package LogStreamMiddleware --version 5.0.0
+dotnet add package ADWorks.Logging --version 1.0.0
 ```
 
 ## Kullanımı
